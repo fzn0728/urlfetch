@@ -9,11 +9,10 @@ import time
 import threading
 import queue
 from urllib.request import urlopen
-import time
 import pandas as pd
 
 
-ticker = pd.ExcelFile('tickerlist.xlsx')
+ticker = pd.ExcelFile('short_tickerlist.xlsx')
 ticker_df = ticker.parse(str(ticker.sheet_names[0]))
 ticker_list = list(ticker_df['Ticker'])
 
@@ -21,23 +20,35 @@ start = time.time()
 
 result = []
 def fetch(ticker):
-    url = 'http://finance.yahoo.com/quote/' + ticker
-    text = urlopen(url).read()
+    url = ('http://www.nasdaq.com/symbol/' + ticker + '/real-time')
+    print('Visit ' + url)
+    text = str(urlopen(url).read())
     result.append([ticker,text])
-    # result[i] = urlopen(url).read()
-    print(url+' fetching...... ' + str(time.time()-start))
+    print(url +' fetching...... ' + str(time.time()-start))
     
 
+        
 process = [None] * len(ticker_list)
 # utility - spawn a thread to execute target for each args
 for i in range(len(ticker_list)):
     process[i] = threading.Thread(target=fetch, args=[ticker_list[i]])
-    process[i].start()
-
-# time.sleep()
+    
 for i in range(len(ticker_list)):    
-    process[i].join()
+    print('Start_' + str(i))
+    process[i].start()
+    # print('Join_' + str(i))    
+    # process[i].join()
+# time.sleep()
 
+
+
+
+# for i in range(len(ticker_list)):
+#     print('Join_' + str(i))    
+#     process[i].join()
 
 print("Elapsed Time: %ss" % (time.time() - start))
 
+# text = str(urlopen('http://www.nasdaq.com/symbol/aapl/real-time').read())
+
+# text.getheaders()
