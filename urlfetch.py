@@ -27,10 +27,10 @@ def load_url(ticker, timeout):
 
 # We can use a with statement to ensure threads are cleaned up promptly
 
-with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
+with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
     li = []
     # Start the load operations and mark each future with its URL
-    future_to_url = {executor.submit(load_url, ticker, 60): ticker for ticker in ticker_list}
+    future_to_url = {executor.submit(load_url, ticker, 15): ticker for ticker in ticker_list}
     for future in concurrent.futures.as_completed(future_to_url):
         url = 'http://finance.yahoo.com/quote/' + future_to_url[future]
         try:
