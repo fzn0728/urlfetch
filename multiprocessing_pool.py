@@ -11,28 +11,30 @@ import requests
 import pandas as pd
 import os
 import time
+import queue
 
 os.chdir('C:\\Users\\ZFang\\Desktop\\TeamCo\\URLfetch\\urlfetch')
 
-start = time.time()
 
 def fetch_url(x):
     myurl = ("http://finance.yahoo.com/q/cp?s=%s" % x)
-    html = requests.get(myurl).content
+    html = str(requests.get(myurl).content)
     #soup = BeautifulSoup(html,'lxml')
-    listOut = [x, str(html)]
+    listOut = [x, html]
     return listOut
 
 tickDF = pd.read_excel('short_tickerlist.xlsx')
 li = tickDF['Ticker'].tolist()
 
 
+start = time.time()
 
 if __name__ == '__main__':
+    q = queue.Queue()
     p = Pool(7)
-    output = p.map_async(fetch_url,li,chunksize=10)
+    output = p.map_async(fetch_url,li,chunksize=28)
     while not output.ready():
-        print("Number of ticker left {0}".format((output._number_left)*10))
+        print("Number of ticker left {0}".format((output._number_left)*28))
         time.sleep(1)
     result = output.get()
     p.close()

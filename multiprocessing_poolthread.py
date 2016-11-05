@@ -10,25 +10,26 @@ import time
 import os
 import pandas as pd
 from urllib.request import urlopen
-
+import requests
 
 os.chdir('C:\\Users\\ZFang\\Desktop\\TeamCo\\URLfetch\\urlfetch')
 
-start = time.time()
 
 
-ticker = pd.ExcelFile('tickerlist.xlsx')
+
+ticker = pd.ExcelFile('short_tickerlist.xlsx')
 ticker_df = ticker.parse(str(ticker.sheet_names[0]))
-ticker_list = list(ticker_df['Ticker'])[0:10]
+ticker_list = list(ticker_df['Ticker'])
 
 
-
+start = time.time()
 
 def fetch(ticker):
     result = []
     url = 'http://finance.yahoo.com/quote/' + ticker
     result.append(ticker)
-    result.append(urlopen(url).read())
+    # result.append(urlopen(url).read())
+    result.append(requests.get(url).content)
     print(url+' fetching...... ' + str(time.time()-start))
     return result
 
@@ -38,8 +39,6 @@ def fetch(ticker):
 
 
 
-pool = ThreadPool(processes=10)
-
-
-result = pool.apply_async(fetch, (ticker_list))
-return_val = result.get()
+pool = ThreadPool(processes=100)
+result = pool.map(fetch, ticker_list)
+# return_val = result.get()
