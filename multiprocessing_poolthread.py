@@ -39,6 +39,6 @@ def fetch(ticker):
 
 
 
-pool = ThreadPool(processes=100)
+pool = ThreadPool(processes=8)
 result = pool.map(fetch, ticker_list)
 # return_val = result.get()
